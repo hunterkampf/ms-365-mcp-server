@@ -1,6 +1,5 @@
 import type { Configuration } from '@azure/msal-node';
 import { PublicClientApplication } from '@azure/msal-node';
-import keytar from 'keytar';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
@@ -86,7 +85,9 @@ class AuthManager {
       let cacheData: string | undefined;
 
       try {
-        const cachedData = await keytar.getPassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT);
+        const keytar = await import('keytar');
+        const cachedData = await keytar.default.getPassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT);
+
         if (cachedData) {
           cacheData = cachedData;
         }
@@ -113,7 +114,9 @@ class AuthManager {
       const cacheData = this.msalApp.getTokenCache().serialize();
 
       try {
-        await keytar.setPassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT, cacheData);
+        const keytar = await import('keytar');
+        await keytar.default.setPassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT, cacheData);
+
       } catch (keytarError) {
         logger.warn(
           `Keychain save failed, falling back to file storage: ${(keytarError as Error).message}`
@@ -248,7 +251,9 @@ class AuthManager {
       this.tokenExpiry = null;
 
       try {
-        await keytar.deletePassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT);
+        const keytar = await import('keytar');
+        await keytar.default.deletePassword(SERVICE_NAME, TOKEN_CACHE_ACCOUNT);
+;
       } catch (keytarError) {
         logger.warn(`Keychain deletion failed: ${(keytarError as Error).message}`);
       }
