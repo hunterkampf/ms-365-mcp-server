@@ -63,4 +63,5 @@ class MicrosoftGraphServer {
   logger.info('Server connected to transport');
 }
 
+
 export default MicrosoftGraphServer;
