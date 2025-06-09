@@ -31,37 +31,37 @@ class MicrosoftGraphServer {
   }
 
   async start(): Promise<void> {
-  if (this.options.v) {
-    enableConsoleLogging();
-  }
+    if (this.options.v) {
+      enableConsoleLogging();
+    }
 
-  logger.info('Microsoft 365 MCP Server starting...');
-  if (this.options.readOnly) {
-    logger.info('Server running in READ-ONLY mode. Write operations are disabled.');
-  }
+    logger.info('Microsoft 365 MCP Server starting...');
+    if (this.options.readOnly) {
+      logger.info('Server running in READ-ONLY mode. Write operations are disabled.');
+    }
 
-  // Add HTTP server for Render compatibility
-  if (process.env.PORT) {
-    const http = await import('http');
-    const server = http.createServer((req, res) => {
-      if (req.url === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'healthy', service: 'Microsoft 365 MCP Server' }));
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('Microsoft 365 MCP Server is running. This is a Model Context Protocol server.');
-      }
-    });
-    
-    server.listen(process.env.PORT, () => {
-      logger.info(`HTTP server listening on port ${process.env.PORT}`);
-    });
-  }
+    // Add HTTP server for Render compatibility
+    if (process.env.PORT) {
+      const http = await import('http');
+      const server = http.createServer((req, res) => {
+        if (req.url === '/health') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'healthy', service: 'Microsoft 365 MCP Server' }));
+        } else {
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end('Microsoft 365 MCP Server is running. This is a Model Context Protocol server.');
+        }
+      });
+      
+      server.listen(process.env.PORT, () => {
+        logger.info(`HTTP server listening on port ${process.env.PORT}`);
+      });
+    }
 
-  const transport = new StdioServerTransport();
-  await this.server!.connect(transport);
-  logger.info('Server connected to transport');
+    const transport = new StdioServerTransport();
+    await this.server!.connect(transport);
+    logger.info('Server connected to transport');
+  }
 }
-
 
 export default MicrosoftGraphServer;
